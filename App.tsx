@@ -11,12 +11,14 @@ import {MMKV} from 'react-native-mmkv';
 
 const storage = new MMKV({
   id: 'session',
+  // If you remove encryption, everything works as expected no matter the value length.
   encryptionKey: 'secret',
 });
 
 export default function App() {
   const [value, setValue] = useState(storage.getString('value'));
 
+  // If you decrease this to 253, then it works as expected when the `encryptionKey` is set.
   const session = Array(254).fill('0').join('');
 
   const setValueInMMKV = () => {
