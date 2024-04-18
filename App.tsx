@@ -1,95 +1,66 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useState} from 'react';
 import {
+  Pressable,
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
+import {MMKV} from 'react-native-mmkv';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const storage = new MMKV({
+  id: 'session',
+  encryptionKey: 'secret',
+});
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+export default function App() {
+  const [value, setValue] = useState(storage.getString('value'));
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+  const session = Array(254).fill('0').join('');
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const setValueInMMKV = () => {
+    storage.set('value', session);
+    setValue(session);
+  };
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const deleteValueFromMMKV = () => {
+    storage.delete('value');
+    setValue('');
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <Text style={styles.value}>Value: {value}</Text>
+        <Text style={styles.value}>Keys: {storage.getAllKeys()}</Text>
+        <View style={styles.sectionContainer}>
+          <View>
+            <Text>Step 1: Let's store a value in MMKV to start with.</Text>
+            <Pressable style={styles.button} onPress={setValueInMMKV}>
+              <Text style={styles.buttonText}>Set Value</Text>
+            </Pressable>
+          </View>
+        </View>
+        <View style={styles.sectionContainer}>
+          <Text>
+            Step 2: Reload the app a couple of times and notice that the value
+            stays.
+          </Text>
+        </View>
+        <View style={styles.sectionContainer}>
+          <Text>Step 3: Let's remove the value from the store:</Text>
+          <Pressable style={styles.button} onPress={deleteValueFromMMKV}>
+            <Text style={styles.buttonText}>Remove Value</Text>
+          </Pressable>
+        </View>
+        <View style={styles.sectionContainer}>
+          <Text>
+            Step 4: Go back to Step 1. The second time through the value will be
+            lost on reload. If you then close the application and reopen it, the
+            value will reappear and the sequence will start over. This only
+            happens when the text length being stored is &gt; 253 characters.
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -97,6 +68,10 @@ function App(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
@@ -104,6 +79,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: '600',
+    marginBottom: 10,
   },
   sectionDescription: {
     marginTop: 8,
@@ -113,6 +89,21 @@ const styles = StyleSheet.create({
   highlight: {
     fontWeight: '700',
   },
+  value: {
+    color: 'white',
+    backgroundColor: 'red',
+    fontWeight: '700',
+    textAlign: 'center',
+    padding: 10,
+  },
+  button: {
+    borderWidth: 1,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginVertical: 10,
+  },
+  buttonText: {
+    textAlign: 'center',
+  },
 });
-
-export default App;
