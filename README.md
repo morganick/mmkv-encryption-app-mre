@@ -40,6 +40,6 @@ yarn ios
 
 If everything is set up _correctly_, you should see the app running in your _iOS Simulator_ shortly.
 
-## Step 4: Follow Onscreen Instructions
+## Step 4: Follow On-screen Instructions
 
-The application, once loaded, has on screen instructions to replicate the issue.
+The application, once loaded, has on-screen instructions to replicate the issue.
